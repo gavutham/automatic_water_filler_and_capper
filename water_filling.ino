@@ -37,7 +37,7 @@ void beep () {
 void setup() {
   Serial.begin(9600); 
 
-  pinMode(IR1, INPUT);
+  pinMode(IR1, HIGH);
   pinMode(IR2, INPUT);
   pinMode(IR3, INPUT);
   pinMode(IR4, INPUT);
@@ -58,6 +58,7 @@ void setup() {
   digitalWrite(relay1, HIGH);
   digitalWrite(relay2, HIGH);
   digitalWrite(relay4, HIGH);
+  digitalWrite(relay5, HIGH);
   digitalWrite(step, LOW);
 }
 
@@ -67,9 +68,9 @@ void loop() {
   digitalWrite(relay1, LOW); //conveyor starts
   Serial.println("Conveyor rotating");
 
-  ir1_reading = digitalRead(IR1);
-  while (ir1_reading == 1) { //loop ends when bottle is detected
-    ir1_reading = digitalRead(IR1);
+  ir4_reading = digitalRead(IR4);
+  while (ir4_reading == 1) { //loop ends when bottle is detected
+    ir4_reading = digitalRead(IR4);
     delayMicroseconds(100);
   }
 
@@ -121,7 +122,7 @@ void loop() {
   
   //lock the solenoid valve
   digitalWrite(relay3, LOW);
-  digitalWrite(relay5, LOW); //gear motor connected to common
+  digitalWrite(relay5, HIGH); //gear motor connected to common
   
   Serial.println("Solenoid valve closes");
 
@@ -131,11 +132,13 @@ void loop() {
   Serial.println("Air pump starts");
 
   //when ir4 senses, stop air pump, then start gear motor
-  ir4_reading = digitalRead(IR4);
-  while (ir4_reading == 1) { //loop ends when capping motor reaches near the bottle
-    ir4_reading = digitalRead(IR4);
-    delayMicroseconds(100);
-  }
+  // ir4_reading = digitalRead(IR4);
+  // while (ir4_reading == 1) { //loop ends when capping motor reaches near the bottle
+  //   ir4_reading = digitalRead(IR4);
+  //   delayMicroseconds(100);
+  // }
+
+  delay(3000); 
 
   //stop air pump
   digitalWrite(relay4, HIGH);
@@ -148,14 +151,14 @@ void loop() {
   delay(5000); // delay for capping process
 
   //after fixed delay 
-  digitalWrite(relay5, HIGH);
+  digitalWrite(relay5, LOW);
 
   beep();
   Serial.println("Capping Motor stops");
   Serial.print("Steps taken: ");
   Serial.println(steps);
 
-  int steps_to_initial = 610-steps;
+  int steps_to_initial = 600-steps;
 
   for(int i=0; i<=steps_to_initial; i++) {
     moveStepper();
